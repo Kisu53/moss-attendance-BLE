@@ -1,4 +1,10 @@
-import type { Beacon, Employee } from "../types/api";
+import type {
+  AttendanceLogDetail,
+  Beacon,
+  DeviceStatus,
+  Employee,
+  SystemConfig,
+} from "../types/api";
 
 export const mockEmployees: Employee[] = [
   {
@@ -119,5 +125,90 @@ export const mockBeacons: Beacon[] = [
     label: "카드-002",
     is_active: true,
     registered_at: "2026-04-02T09:10:00+09:00",
+  },
+  {
+    id: 3,
+    mac_address: "22:33:44:55:66:77",
+    employee_id: 3,
+    label: "카드-003",
+    is_active: true,
+    registered_at: "2026-04-02T09:20:00+09:00",
+  },
+];
+
+export const mockAttendanceLogs: AttendanceLogDetail[] = [
+  {
+    id: 1,
+    employee_id: 1,
+    beacon_id: 1,
+    check_in: "2026-04-27T08:58:00+09:00",
+    check_out: null,
+    date: "2026-04-27",
+    rssi: -62,
+    auto_checkout: false,
+    memo: null,
+    created_at: "2026-04-27T08:58:00+09:00",
+    employee: mockEmployees[0],
+    beacon: mockBeacons[0],
+  },
+  {
+    id: 2,
+    employee_id: 2,
+    beacon_id: 2,
+    check_in: "2026-04-27T09:12:00+09:00",
+    check_out: null,
+    date: "2026-04-27",
+    rssi: -68,
+    auto_checkout: false,
+    memo: null,
+    created_at: "2026-04-27T09:12:00+09:00",
+    employee: mockEmployees[1],
+    beacon: mockBeacons[1],
+  },
+  {
+    id: 3,
+    employee_id: 3,
+    beacon_id: 3,
+    check_in: "2026-04-27T09:02:00+09:00",
+    check_out: "2026-04-27T18:04:00+09:00",
+    date: "2026-04-27",
+    rssi: -71,
+    auto_checkout: false,
+    memo: null,
+    created_at: "2026-04-27T09:02:00+09:00",
+    employee: mockEmployees[2],
+    beacon: mockBeacons[2],
+  },
+];
+
+export const mockDeviceStatuses: DeviceStatus[] = [
+  {
+    device_id: "moss-gateway-01",
+    online: true,
+    last_heartbeat_at: "2026-04-27T10:20:00+09:00",
+    uptime_seconds: 84211,
+    free_heap: 182144,
+    wifi_rssi: -51,
+  },
+];
+
+export const mockSystemConfigs: SystemConfig[] = [
+  {
+    key: "rssi_threshold",
+    value: "-75",
+    description: "BLE 출석 감지로 인정할 최소 RSSI 값",
+    updated_at: "2026-04-27T09:00:00+09:00",
+  },
+  {
+    key: "auto_checkout_minutes",
+    value: "540",
+    description: "출근 후 자동 퇴근 처리까지의 시간",
+    updated_at: "2026-04-27T09:00:00+09:00",
+  },
+  {
+    key: "scan_interval_seconds",
+    value: "10",
+    description: "게이트웨이 BLE 스캔 주기",
+    updated_at: "2026-04-27T09:00:00+09:00",
   },
 ];
