@@ -2,6 +2,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
 
+//상단 바에 로고, 사용자 정보, 로그아웃 버튼 배치
 export default function Header() {
     const { logout } = useAuth();
     const navigate = useNavigate();
