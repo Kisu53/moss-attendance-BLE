@@ -6,12 +6,14 @@ import styles from "./Dashboard.module.css";
 //Data fetching 상태 3가지 명시
 type Status = "loading" | "success" | "error";
 export default function Dashboard() {
-    // data, status, error 3가지의 별도 state로 분리, 추후 useReducer로 합치는 리팩토링 가능
+    /* data, status, error 3가지의 별도 state로 분리, 추후 useReducer로 합치는 리팩토링 가능
+    TypeScript 에서는 state의 value를 generic으로 명시하여 타입 정의 필요 */
     const [data, setData] = useState<AttendanceTodayResponse | null>(null);
     const [status, setStatus] = useState<Status>("loading");
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    /*컴포넌트가 화면에 뜨면 API를 호출하고, 성공/실패 상태를 관리하되, 컴포넌트가 사라진 후에는 state를 바꾸지 않도록 */
+    /* 컴포넌트가 화면에 뜨면 API를 호출하고, 성공/실패 상태를 관리하되, 컴포넌트가 사라진 후에는 state를 바꾸지 않도록.
+        useEffect는 undefined or cleanup 함수 콜백 반환을 기대하므로 Promise를 반환하는 async는 useEffect의 콜백 함수로 두면 안됨 */
     useEffect(() => {
         let cancelled = false;
 
@@ -19,6 +21,7 @@ export default function Dashboard() {
         const fetchData = async () => {
             try {
                 const res = await fetch("/api/v1/attendance/today");
+                // 응답 코드가 200번대이면 true, 그 외 false. 추후 401, 403 등 응답에 따라 분기 처리 예정
                 if (!res.ok) {
                     throw new Error(`Serever Response Error: ${res.status}`);
                 }

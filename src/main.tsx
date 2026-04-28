@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 
 async function enableMocking() {
+    // npm run dev => true, npm run build => false로 런타임에서 동작 차단
     if (!import.meta.env.DEV || import.meta.env.VITE_API_MOCKING === "false") {
         return;
     }
