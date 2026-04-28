@@ -25,18 +25,19 @@ export interface PaginatedResponse<T> {
 }
 
 export interface Employee {
-    id: ApiId;
+    id: number;
     name: string;
-    email?: string | null;
+    email: string | null;
     department: string;
     position: string;
-    is_active: boolean;
-    created_at: ISODateTimeString;
-    updated_at: ISODateTimeString;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
-export interface EmployeeWithBeacon extends Employee {
-    beacon?: Beacon | null;
+export interface EmployeeListResponse {
+    data: Employee[];
+    total: number;
 }
 
 export interface Beacon {
