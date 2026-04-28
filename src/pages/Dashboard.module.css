@@ -1,0 +1,17 @@
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.subtitle {
+    color: #666;
+    margin: 0 0 28px 0;
+    font-size: 14px;
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
