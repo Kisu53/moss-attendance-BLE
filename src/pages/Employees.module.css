@@ -1,0 +1,120 @@
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 24px 0;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.filterGroup {
+    display: flex;
+    gap: 4px;
+    background-color: #f0f0f2;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.filterBtn {
+    padding: 6px 14px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+}
+
+.filterBtn:hover {
+    color: #222;
+}
+
+.filterBtnActive {
+    background-color: white;
+    color: #222;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.count {
+    font-size: 13px;
+    color: #666;
+}
+
+.tableWrapper {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead {
+    background-color: #f9f9fa;
+}
+
+.table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 500;
+    color: #555;
+    font-size: 13px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #222;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+.badgeActive,
+.badgeInactive {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badgeActive {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.badgeInactive {
+    background-color: #f1f1f3;
+    color: #888;
+}
+
+.message {
+    padding: 40px;
+    text-align: center;
+    color: #666;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+}
+
+.errorDetail {
+    font-size: 13px;
+    color: #999;
+    margin-top: 8px;
+}
