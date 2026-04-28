@@ -61,16 +61,21 @@ export interface AttendanceTodayResponse {
 }
 
 export interface AttendanceLog {
-    id: ApiId;
-    employee_id: ApiId;
-    beacon_id: ApiId;
-    check_in: ISODateTimeString;
-    check_out: ISODateTimeString | null;
-    date: LocalDateString;
+    id: number;
+    employeeId: number;
+    employeeName: string;
+    beaconId: number;
+    beaconLabel: string;
+    checkIn: string; // ISO 8601 timestamp
+    checkOut: string | null;
+    date: string; // YYYY-MM-DD
     rssi: number;
-    auto_checkout: boolean;
-    memo?: string | null;
-    created_at: ISODateTimeString;
+    autoCheckout: boolean;
+}
+
+export interface AttendanceListResponse {
+    data: AttendanceLog[];
+    total: number;
 }
 
 export interface AttendanceLogDetail extends AttendanceLog {
