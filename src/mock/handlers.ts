@@ -178,7 +178,7 @@ const mockDeviceStatus: DeviceStatus[] = [
     },
 ];
 
-let mockBeacons: Beacon[] = [
+const mockBeacons: Beacon[] = [
     {
         id: 1,
         macAddress: "AA:BB:CC:11:22:33",

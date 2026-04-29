@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
 import Attendance from "./pages/Attendance";
+import Beacons from "./pages/Beacons";
 
 function App() {
     return (
@@ -25,7 +26,7 @@ function App() {
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/attendance" element={<Attendance />} />
                         <Route path="/employees" element={<Employees />} />
-                        <Route path="/beacons" element={<div>Beacons Page</div>} />
+                        <Route path="/beacons" element={<Beacons />} />
                         <Route path="/settings" element={<div>Settings Page</div>} />
                     </Route>
 
