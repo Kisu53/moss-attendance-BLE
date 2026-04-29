@@ -14,6 +14,19 @@ import type {
   CreateBeaconRequest,
 } from "../types/api";
 
+const getMockDate = (offsetDays = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const mockToday = getMockDate();
+const mockYesterday = getMockDate(-1);
+const toMockDateTime = (date: string, time: string) => `${date}T${time}+09:00`;
+
 const mockAttendanceLogs: AttendanceLog[] = [
   {
     id: 1,
@@ -21,9 +34,9 @@ const mockAttendanceLogs: AttendanceLog[] = [
     employeeName: "김기수",
     beaconId: 1,
     beaconLabel: "카드-001",
-    checkIn: "2026-04-27T09:02:14+09:00",
-    checkOut: "2026-04-27T18:15:32+09:00",
-    date: "2026-04-27",
+    checkIn: toMockDateTime(mockToday, "09:02:14"),
+    checkOut: toMockDateTime(mockToday, "18:15:32"),
+    date: mockToday,
     rssi: -68,
     autoCheckout: true,
   },
@@ -33,9 +46,9 @@ const mockAttendanceLogs: AttendanceLog[] = [
     employeeName: "이영희",
     beaconId: 2,
     beaconLabel: "카드-002",
-    checkIn: "2026-04-27T08:45:00+09:00",
-    checkOut: "2026-04-27T17:50:21+09:00",
-    date: "2026-04-27",
+    checkIn: toMockDateTime(mockToday, "08:45:00"),
+    checkOut: toMockDateTime(mockToday, "17:50:21"),
+    date: mockToday,
     rssi: -72,
     autoCheckout: true,
   },
@@ -45,9 +58,9 @@ const mockAttendanceLogs: AttendanceLog[] = [
     employeeName: "박민수",
     beaconId: 3,
     beaconLabel: "카드-003",
-    checkIn: "2026-04-27T09:30:48+09:00",
+    checkIn: toMockDateTime(mockToday, "09:30:48"),
     checkOut: null,
-    date: "2026-04-27",
+    date: mockToday,
     rssi: -65,
     autoCheckout: false,
   },
@@ -57,9 +70,9 @@ const mockAttendanceLogs: AttendanceLog[] = [
     employeeName: "최지원",
     beaconId: 4,
     beaconLabel: "카드-004",
-    checkIn: "2026-04-26T08:55:12+09:00",
-    checkOut: "2026-04-26T18:02:45+09:00",
-    date: "2026-04-26",
+    checkIn: toMockDateTime(mockYesterday, "08:55:12"),
+    checkOut: toMockDateTime(mockYesterday, "18:02:45"),
+    date: mockYesterday,
     rssi: -70,
     autoCheckout: true,
   },
@@ -69,9 +82,9 @@ const mockAttendanceLogs: AttendanceLog[] = [
     employeeName: "김기수",
     beaconId: 1,
     beaconLabel: "카드-001",
-    checkIn: "2026-04-26T09:10:00+09:00",
-    checkOut: "2026-04-26T18:30:15+09:00",
-    date: "2026-04-26",
+    checkIn: toMockDateTime(mockYesterday, "09:10:00"),
+    checkOut: toMockDateTime(mockYesterday, "18:30:15"),
+    date: mockYesterday,
     rssi: -67,
     autoCheckout: true,
   },
@@ -135,35 +148,35 @@ const mockRecentDetections: RecentDetection[] = [
     id: 1,
     beaconLabel: "카드-001",
     employeeName: "김기수",
-    detectedAt: "2026-04-27T14:32:15+09:00",
+    detectedAt: toMockDateTime(mockToday, "14:32:15"),
     rssi: -67,
   },
   {
     id: 2,
     beaconLabel: "카드-003",
     employeeName: "박민수",
-    detectedAt: "2026-04-27T14:31:48+09:00",
+    detectedAt: toMockDateTime(mockToday, "14:31:48"),
     rssi: -65,
   },
   {
     id: 3,
     beaconLabel: "카드-002",
     employeeName: "이영희",
-    detectedAt: "2026-04-27T14:30:22+09:00",
+    detectedAt: toMockDateTime(mockToday, "14:30:22"),
     rssi: -72,
   },
   {
     id: 4,
     beaconLabel: "카드-001",
     employeeName: "김기수",
-    detectedAt: "2026-04-27T14:28:55+09:00",
+    detectedAt: toMockDateTime(mockToday, "14:28:55"),
     rssi: -69,
   },
   {
     id: 5,
     beaconLabel: "카드-004",
     employeeName: "최지원",
-    detectedAt: "2026-04-27T14:25:10+09:00",
+    detectedAt: toMockDateTime(mockToday, "14:25:10"),
     rssi: -70,
   },
 ];
@@ -172,7 +185,7 @@ const mockDeviceStatus: DeviceStatus[] = [
   {
     deviceId: "ESP32-6F-001",
     online: true,
-    lastHeartbeat: "2026-04-27T14:33:00+09:00",
+    lastHeartbeat: toMockDateTime(mockToday, "14:33:00"),
     uptimeSeconds: 86420,
     wifiRssi: -45,
   },
@@ -222,7 +235,7 @@ let nextBeaconId = 5;
 export const handlers = [
   http.get("/api/v1/attendance/today", () => {
     const response: AttendanceTodayResponse = {
-      date: "2026-04-27",
+      date: mockToday,
       total: 18,
       checkedIn: 14,
       notCheckedIn: 2,

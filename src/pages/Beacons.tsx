@@ -1,17 +1,10 @@
-import { useState } from "react";
 import { useFetch } from "../utils/useFetch";
 import type { Beacon, BeaconListResponse } from "../types/api";
 import { formatDate } from "../utils/date";
 import styles from "./Beacons.module.css";
 
 export default function Beacons() {
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const { data, status, errorMessage } = useFetch<BeaconListResponse>(
-    `/api/v1/beacons?_=${refreshKey}`
-  );
-
-  const triggerRefresh = () => setRefreshKey((k) => k + 1);
+  const { data, status, errorMessage } = useFetch<BeaconListResponse>("/api/v1/beacons");
 
   return (
     <div>
