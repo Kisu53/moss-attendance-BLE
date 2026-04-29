@@ -1,49 +1,21 @@
-import { useEffect, useState } from "react";
-import type { Employee, EmployeeListResponse } from "../types/api";
+import { useState } from "react";
+import { useFetch } from "../utils/useFetch";
+import { fetchEmployees } from "../api/employees";
+import type { Employee } from "../types/api";
 import styles from "./Employees.module.css";
 
-type Status = "loading" | "success" | "error";
 type ActiveFilter = "all" | "active" | "inactive";
 
 export default function Employees() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [status, setStatus] = useState<Status>("loading");
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [activeFilter, setActiveFilter] = useState<ActiveFilter>("active");
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchEmployees = async () => {
-      setStatus("loading");
-      try {
-        let url = "/api/v1/employees";
-        if (activeFilter === "active") url += "?is_active=true";
-        else if (activeFilter === "inactive") url += "?is_active=false";
-
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error(`서버 응답 오류: ${res.status}`);
-        }
-        const json: EmployeeListResponse = await res.json();
-        if (!cancelled) {
-          setEmployees(json.data);
-          setStatus("success");
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setErrorMessage(err instanceof Error ? err.message : "알 수 없는 오류");
-          setStatus("error");
-        }
-      }
-    };
-
-    fetchEmployees();
-
-    return () => {
-      cancelled = true;
-    };
+  const { data, status, errorMessage } = useFetch(() => {
+    const isActive =
+      activeFilter === "active" ? "true" : activeFilter === "inactive" ? "false" : undefined;
+    return fetchEmployees(isActive);
   }, [activeFilter]);
+
+  const employees: Employee[] = data?.data ?? [];
 
   const filterButtons: { value: ActiveFilter; label: string }[] = [
     { value: "active", label: "재직중" },

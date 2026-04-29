@@ -1,11 +1,10 @@
 import { useFetch } from "../utils/useFetch";
-import type { DeviceStatus, DeviceStatusResponse } from "../types/api";
+import { fetchDeviceStatus } from "../api/dashboard";
 import styles from "./DeviceStatusCard.module.css";
+import type { DeviceStatus } from "../types/api";
 
 export default function DeviceStatusCard() {
-  const { data, status, errorMessage } = useFetch<DeviceStatusResponse>(
-    "/api/v1/dashboard/device-status"
-  );
+  const { data, status, errorMessage } = useFetch(() => fetchDeviceStatus());
 
   if (status === "loading") {
     return (

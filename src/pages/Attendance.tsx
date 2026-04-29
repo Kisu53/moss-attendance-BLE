@@ -1,45 +1,19 @@
-import { useEffect, useState } from "react";
-import type { AttendanceLog, AttendanceListResponse } from "../types/api";
+import { useState } from "react";
+import { useFetch } from "../utils/useFetch";
+import { fetchAttendanceList } from "../api/attendance";
+import type { AttendanceLog } from "../types/api";
 import { formatTime, getTodayString } from "../utils/date";
 import styles from "./Attendance.module.css";
 
-type Status = "loading" | "success" | "error";
-
 export default function Attendance() {
-  const [logs, setLogs] = useState<AttendanceLog[]>([]);
-  const [status, setStatus] = useState<Status>("loading");
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
 
-  useEffect(() => {
-    let cancelled = false;
+  const { data, status, errorMessage } = useFetch(
+    () => fetchAttendanceList(selectedDate),
+    [selectedDate]
+  );
 
-    const fetchLogs = async () => {
-      setStatus("loading");
-      try {
-        const res = await fetch(`/api/v1/attendance?date=${selectedDate}`);
-        if (!res.ok) {
-          throw new Error(`서버 응답 오류: ${res.status}`);
-        }
-        const json: AttendanceListResponse = await res.json();
-        if (!cancelled) {
-          setLogs(json.data);
-          setStatus("success");
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setErrorMessage(err instanceof Error ? err.message : "알 수 없는 오류");
-          setStatus("error");
-        }
-      }
-    };
-
-    fetchLogs();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedDate]);
+  const logs: AttendanceLog[] = data?.data ?? [];
 
   return (
     <div>
@@ -51,7 +25,6 @@ export default function Attendance() {
           <input
             type="date"
             value={selectedDate}
-            // 사용자가 날짜를 바꿀 때 state 업데이트
             onChange={(e) => setSelectedDate(e.target.value)}
             className={styles.dateInput}
           />

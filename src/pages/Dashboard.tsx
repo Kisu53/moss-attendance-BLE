@@ -2,13 +2,11 @@ import { useFetch } from "../utils/useFetch";
 import StatusCard from "../components/StatusCard";
 import RealTimeFeed from "../components/RealTimeFeed";
 import DeviceStatusCard from "../components/DeviceStatusCard";
-import type { AttendanceTodayResponse } from "../types/api";
 import styles from "./Dashboard.module.css";
+import { fetchAttendanceToday } from "../api/attendance";
 
 export default function Dashboard() {
-  const { data, status, errorMessage } = useFetch<AttendanceTodayResponse>(
-    "/api/v1/attendance/today"
-  );
+  const { data, status, errorMessage } = useFetch(() => fetchAttendanceToday());
 
   return (
     <div>

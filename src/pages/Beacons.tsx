@@ -1,10 +1,13 @@
 import { useFetch } from "../utils/useFetch";
-import type { Beacon, BeaconListResponse } from "../types/api";
+import { fetchBeacons } from "../api/beacons";
+import type { Beacon } from "../types/api";
 import { formatDate } from "../utils/date";
 import styles from "./Beacons.module.css";
 
 export default function Beacons() {
-  const { data, status, errorMessage } = useFetch<BeaconListResponse>("/api/v1/beacons");
+  const { data, status, errorMessage } = useFetch(() => fetchBeacons());
+
+  const beacons: Beacon[] = data?.data ?? [];
 
   return (
     <div>
@@ -19,11 +22,11 @@ export default function Beacons() {
         <div className={styles.message}>데이터를 불러오지 못했습니다: {errorMessage}</div>
       )}
 
-      {status === "success" && data && data.data.length === 0 && (
+      {status === "success" && beacons.length === 0 && (
         <div className={styles.message}>등록된 비콘이 없습니다.</div>
       )}
 
-      {status === "success" && data && data.data.length > 0 && (
+      {status === "success" && beacons.length > 0 && (
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
             <thead>
@@ -37,7 +40,7 @@ export default function Beacons() {
               </tr>
             </thead>
             <tbody>
-              {data.data.map((beacon) => (
+              {beacons.map((beacon) => (
                 <BeaconRow key={beacon.id} beacon={beacon} />
               ))}
             </tbody>
