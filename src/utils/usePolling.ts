@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AxiosError } from "axios";
 
 type Status = "loading" | "success" | "error";
 
@@ -8,7 +9,7 @@ interface UsePollingResult<T> {
   errorMessage: string;
 }
 
-export function usePolling<T>(url: string, intervalMs: number): UsePollingResult<T> {
+export function usePolling<T>(fetcher: () => Promise<T>, intervalMs: number): UsePollingResult<T> {
   const [data, setData] = useState<T | null>(null);
   const [status, setStatus] = useState<Status>("loading");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -16,33 +17,41 @@ export function usePolling<T>(url: string, intervalMs: number): UsePollingResult
   useEffect(() => {
     let cancelled = false;
 
-    const fetchData = async () => {
-      try {
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error(`서버 응답 오류: ${res.status}`);
-        }
-        const json: T = await res.json();
-        if (!cancelled) {
-          setData(json);
-          setStatus("success");
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setErrorMessage(err instanceof Error ? err.message : "알 수 없는 오류");
-          setStatus("error");
-        }
-      }
+    const run = () => {
+      fetcher()
+        .then((result) => {
+          if (!cancelled) {
+            setData(result);
+            setStatus("success");
+          }
+        })
+        .catch((err: unknown) => {
+          if (!cancelled) {
+            setErrorMessage(extractErrorMessage(err));
+            setStatus("error");
+          }
+        });
     };
 
-    fetchData();
-    const intervalId = setInterval(fetchData, intervalMs);
+    run();
+    const intervalId = setInterval(run, intervalMs);
 
     return () => {
       cancelled = true;
       clearInterval(intervalId);
     };
-  }, [url, intervalMs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [intervalMs]);
 
   return { data, status, errorMessage };
+}
+
+function extractErrorMessage(err: unknown): string {
+  if (err instanceof AxiosError) {
+    return err.response?.data?.error ?? err.message;
+  }
+  if (err instanceof Error) {
+    return err.message;
+  }
+  return "알 수 없는 오류";
 }
