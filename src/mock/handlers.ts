@@ -9,6 +9,9 @@ import type {
     DeviceStatusResponse,
     RecentDetection,
     RecentDetectionsResponse,
+    Beacon,
+    BeaconListResponse,
+    CreateBeaconRequest,
 } from "../types/api";
 
 const mockAttendanceLogs: AttendanceLog[] = [
@@ -175,6 +178,47 @@ const mockDeviceStatus: DeviceStatus[] = [
     },
 ];
 
+let mockBeacons: Beacon[] = [
+    {
+        id: 1,
+        macAddress: "AA:BB:CC:11:22:33",
+        employeeId: 101,
+        employeeName: "김기수",
+        label: "카드-001",
+        isActive: true,
+        registeredAt: "2026-01-15T09:00:00+09:00",
+    },
+    {
+        id: 2,
+        macAddress: "AA:BB:CC:11:22:34",
+        employeeId: 102,
+        employeeName: "이영희",
+        label: "카드-002",
+        isActive: true,
+        registeredAt: "2026-01-15T09:00:00+09:00",
+    },
+    {
+        id: 3,
+        macAddress: "AA:BB:CC:11:22:35",
+        employeeId: 103,
+        employeeName: "박민수",
+        label: "카드-003",
+        isActive: true,
+        registeredAt: "2026-01-15T09:00:00+09:00",
+    },
+    {
+        id: 4,
+        macAddress: "AA:BB:CC:11:22:36",
+        employeeId: 104,
+        employeeName: "최지원",
+        label: "카드-004",
+        isActive: true,
+        registeredAt: "2026-02-10T09:00:00+09:00",
+    },
+];
+
+let nextBeaconId = 5;
+
 export const handlers = [
     http.get("/api/v1/attendance/today", () => {
         const response: AttendanceTodayResponse = {
@@ -239,5 +283,57 @@ export const handlers = [
             data: mockDeviceStatus,
         };
         return HttpResponse.json(response);
+    }),
+
+    http.get("/api/v1/beacons", () => {
+        const response: BeaconListResponse = {
+            data: mockBeacons,
+            total: mockBeacons.length,
+        };
+        return HttpResponse.json(response);
+    }),
+
+    http.post("/api/v1/beacons", async ({ request }) => {
+        // Type 단언(as CreateBeaconRequest) 대신 zod 사용하는게 안전
+        const body = (await request.json()) as CreateBeaconRequest;
+
+        // 중복 MAC 체크
+        if (mockBeacons.some((b) => b.macAddress === body.macAddress)) {
+            return HttpResponse.json({ error: "이미 등록된 MAC 주소입니다." }, { status: 400 });
+        }
+
+        // 직원 정보 조회
+        const employee = mockEmployees.find((e) => e.id === body.employeeId);
+        if (!employee) {
+            return HttpResponse.json({ error: "존재하지 않는 직원입니다." }, { status: 400 });
+        }
+
+        const newBeacon: Beacon = {
+            id: nextBeaconId++,
+            macAddress: body.macAddress,
+            employeeId: body.employeeId,
+            employeeName: employee.name,
+            label: body.label,
+            isActive: true,
+            registeredAt: new Date().toISOString(),
+        };
+
+        mockBeacons.push(newBeacon);
+
+        return HttpResponse.json(newBeacon, { status: 201 });
+    }),
+
+    http.delete("/api/v1/beacons/:id", ({ params }) => {
+        const id = Number(params.id);
+        const beacon = mockBeacons.find((b) => b.id === id);
+
+        if (!beacon) {
+            return HttpResponse.json({ error: "존재하지 않는 비콘입니다." }, { status: 404 });
+        }
+
+        // soft delete (명세서대로)
+        beacon.isActive = false;
+
+        return HttpResponse.json(beacon);
     }),
 ];

@@ -1,11 +1,11 @@
 import { usePolling } from "../utils/usePolling";
 import type { RecentDetection, RecentDetectionsResponse } from "../types/api";
 import { formatTime } from "../utils/date";
-import styles from "./RealtimeFeed.module.css";
+import styles from "./RealTimeFeed.module.css";
 
 const POLLING_INTERVAL_MS = 5000;
 
-export default function RealtimeFeed() {
+export default function RealTimeFeed() {
     const { data, status, errorMessage } = usePolling<RecentDetectionsResponse>(
         "/api/v1/dashboard/realtime",
         POLLING_INTERVAL_MS,

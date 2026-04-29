@@ -1,13 +1,17 @@
 .title {
     font-size: 24px;
     font-weight: 600;
-    margin: 0 0 8px 0;
+    margin: 0 0 4px 0;
 }
 
 .subtitle {
     color: #666;
-    margin: 0 0 28px 0;
+    margin: 0 0 24px 0;
     font-size: 14px;
+}
+
+.cardSection {
+    margin-bottom: 24px;
 }
 
 .cardGrid {
@@ -16,14 +20,23 @@
     gap: 16px;
 }
 
-.message {
-    padding: 40px;
-    text-align: center;
-    color: #666;
+.bottomGrid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 16px;
 }
 
-.errorDetail {
-    font-size: 13px;
-    color: #999;
-    margin-top: 8px;
+@media (max-width: 900px) {
+    .bottomGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.message {
+    padding: 24px;
+    text-align: center;
+    color: #888;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
 }

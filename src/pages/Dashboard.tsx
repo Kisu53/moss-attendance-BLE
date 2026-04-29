@@ -1,75 +1,38 @@
-import { useEffect, useState } from "react";
+import { useFetch } from "../utils/useFetch";
 import StatusCard from "../components/StatusCard";
+import RealTimeFeed from "../components/RealTimeFeed";
+import DeviceStatusCard from "../components/DeviceStatusCard";
 import type { AttendanceTodayResponse } from "../types/api";
 import styles from "./Dashboard.module.css";
 
-//Data fetching 상태 3가지 명시
-type Status = "loading" | "success" | "error";
 export default function Dashboard() {
-    /* data, status, error 3가지의 별도 state로 분리, 추후 useReducer로 합치는 리팩토링 가능
-    TypeScript 에서는 state의 value를 generic으로 명시하여 타입 정의 필요 */
-    const [data, setData] = useState<AttendanceTodayResponse | null>(null);
-    const [status, setStatus] = useState<Status>("loading");
-    const [errorMessage, setErrorMessage] = useState<string>("");
-
-    /* 컴포넌트가 화면에 뜨면 API를 호출하고, 성공/실패 상태를 관리하되, 컴포넌트가 사라진 후에는 state를 바꾸지 않도록.
-        useEffect는 undefined or cleanup 함수 콜백 반환을 기대하므로 Promise를 반환하는 async는 useEffect의 콜백 함수로 두면 안됨 */
-    useEffect(() => {
-        let cancelled = false;
-
-        //api 요청을 보내는 비동기 함수
-        const fetchData = async () => {
-            try {
-                const res = await fetch("/api/v1/attendance/today");
-                // 응답 코드가 200번대이면 true, 그 외 false. 추후 401, 403 등 응답에 따라 분기 처리 예정
-                if (!res.ok) {
-                    throw new Error(`Serever Response Error: ${res.status}`);
-                }
-                const json: AttendanceTodayResponse = await res.json();
-                if (!cancelled) {
-                    setData(json);
-                    setStatus("success");
-                }
-            } catch (err) {
-                if (!cancelled) {
-                    setErrorMessage(err instanceof Error ? err.message : "Unknown Error");
-                    setStatus("error");
-                }
-            }
-        };
-
-        fetchData();
-
-        return () => {
-            cancelled = true;
-        };
-    }, []);
-
-    if (status === "loading") {
-        return <div className={styles.message}>Loading...</div>;
-    }
-
-    if (status === "error") {
-        return (
-            <div className={styles.message}>
-                <p>Failed to fetch data.</p>
-                <p className={styles.errorDetail}>{errorMessage}</p>
-            </div>
-        );
-    }
-
-    if (!data) return null;
+    const { data, status, errorMessage } = useFetch<AttendanceTodayResponse>(
+        "/api/v1/attendance/today",
+    );
 
     return (
         <div>
             <h1 className={styles.title}>대시보드</h1>
-            <p className={styles.subtitle}>{data.date} 기준 오늘의 출근 현황</p>
+            <p className={styles.subtitle}>
+                {data ? `${data.date} 기준 오늘의 출근 현황` : "오늘의 출근 현황"}
+            </p>
 
-            <div className={styles.cardGrid}>
-                <StatusCard label="전체 직원" value={data.total} variant="default" />
-                <StatusCard label="출근" value={data.checkedIn} variant="primary" />
-                <StatusCard label="미출근" value={data.notCheckedIn} variant="warning" />
-                <StatusCard label="퇴근" value={data.checkedOut} variant="muted" />
+            <section className={styles.cardSection}>
+                {status === "loading" && <div className={styles.message}>로딩 중...</div>}
+                {status === "error" && <div className={styles.message}>오류: {errorMessage}</div>}
+                {status === "success" && data && (
+                    <div className={styles.cardGrid}>
+                        <StatusCard label="전체 직원" value={data.total} variant="default" />
+                        <StatusCard label="출근" value={data.checkedIn} variant="primary" />
+                        <StatusCard label="미출근" value={data.notCheckedIn} variant="warning" />
+                        <StatusCard label="퇴근" value={data.checkedOut} variant="muted" />
+                    </div>
+                )}
+            </section>
+
+            <div className={styles.bottomGrid}>
+                <RealTimeFeed />
+                <DeviceStatusCard />
             </div>
         </div>
     );

@@ -41,16 +41,24 @@ export interface EmployeeListResponse {
 }
 
 export interface Beacon {
-    id: ApiId;
-    mac_address: MacAddress;
-    employee_id: ApiId;
-    label?: string | null;
-    is_active: boolean;
-    registered_at: ISODateTimeString;
+    id: number;
+    macAddress: string;
+    employeeId: number | null;
+    employeeName: string | null;
+    label: string;
+    isActive: boolean;
+    registeredAt: string;
 }
 
-export interface BeaconWithEmployee extends Beacon {
-    employee?: Employee | null;
+export interface BeaconListResponse {
+    data: Beacon[];
+    total: number;
+}
+
+export interface CreateBeaconRequest {
+    macAddress: string;
+    employeeId: number;
+    label: string;
 }
 
 export interface AttendanceTodayResponse {
@@ -205,12 +213,6 @@ export interface CreateEmployeeRequest {
 export type UpdateEmployeeRequest = Partial<CreateEmployeeRequest> & {
     is_active?: boolean;
 };
-
-export interface CreateBeaconRequest {
-    mac_address: MacAddress;
-    employee_id: ApiId;
-    label?: string;
-}
 
 export interface UpdateBeaconRequest {
     mac_address?: MacAddress;
