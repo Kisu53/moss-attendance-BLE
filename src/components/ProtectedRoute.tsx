@@ -5,12 +5,12 @@ import type { ReactNode } from "react";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
-    const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = useAuth();
 
-    //isLoggedIn state가 False이면 /login 으로, replace로 브라우저 히스토리 교체
-    if (!isLoggedIn) {
-        return <Navigate to="/login" replace />;
-    }
+  //isLoggedIn state가 False이면 /login 으로, replace로 브라우저 히스토리 교체
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
 
-    return <>{children}</>;
+  return <>{children}</>;
 }

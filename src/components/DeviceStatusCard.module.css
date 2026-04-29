@@ -1,85 +1,85 @@
 .section {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e5e5e5;
-    padding: 20px 24px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  padding: 20px 24px;
 }
 
 .title {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
 }
 
 .deviceList {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .device {
-    padding: 12px;
-    background-color: #f9f9fa;
-    border-radius: 8px;
+  padding: 12px;
+  background-color: #f9f9fa;
+  border-radius: 8px;
 }
 
 .deviceHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .deviceId {
-    font-family: monospace;
-    font-size: 13px;
-    font-weight: 500;
-    color: #333;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
 }
 
 .statusBadge {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .online {
-    background-color: #dcfce7;
-    color: #15803d;
+  background-color: #dcfce7;
+  color: #15803d;
 }
 
 .offline {
-    background-color: #fee2e2;
-    color: #b91c1c;
+  background-color: #fee2e2;
+  color: #b91c1c;
 }
 
 .deviceMeta {
-    display: flex;
-    gap: 20px;
+  display: flex;
+  gap: 20px;
 }
 
 .metaItem {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .metaLabel {
-    font-size: 11px;
-    color: #888;
+  font-size: 11px;
+  color: #888;
 }
 
 .metaValue {
-    font-size: 13px;
-    color: #333;
-    font-weight: 500;
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
 }
 
 .message {
-    padding: 16px;
-    text-align: center;
-    color: #888;
-    font-size: 13px;
+  padding: 16px;
+  text-align: center;
+  color: #888;
+  font-size: 13px;
 }
