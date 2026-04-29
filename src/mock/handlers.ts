@@ -5,6 +5,10 @@ import type {
     AttendanceLog,
     Employee,
     EmployeeListResponse,
+    DeviceStatus,
+    DeviceStatusResponse,
+    RecentDetection,
+    RecentDetectionsResponse,
 } from "../types/api";
 
 const mockAttendanceLogs: AttendanceLog[] = [
@@ -123,6 +127,54 @@ const mockEmployees: Employee[] = [
     },
 ];
 
+const mockRecentDetections: RecentDetection[] = [
+    {
+        id: 1,
+        beaconLabel: "카드-001",
+        employeeName: "김기수",
+        detectedAt: "2026-04-27T14:32:15+09:00",
+        rssi: -67,
+    },
+    {
+        id: 2,
+        beaconLabel: "카드-003",
+        employeeName: "박민수",
+        detectedAt: "2026-04-27T14:31:48+09:00",
+        rssi: -65,
+    },
+    {
+        id: 3,
+        beaconLabel: "카드-002",
+        employeeName: "이영희",
+        detectedAt: "2026-04-27T14:30:22+09:00",
+        rssi: -72,
+    },
+    {
+        id: 4,
+        beaconLabel: "카드-001",
+        employeeName: "김기수",
+        detectedAt: "2026-04-27T14:28:55+09:00",
+        rssi: -69,
+    },
+    {
+        id: 5,
+        beaconLabel: "카드-004",
+        employeeName: "최지원",
+        detectedAt: "2026-04-27T14:25:10+09:00",
+        rssi: -70,
+    },
+];
+
+const mockDeviceStatus: DeviceStatus[] = [
+    {
+        deviceId: "ESP32-6F-001",
+        online: true,
+        lastHeartbeat: "2026-04-27T14:33:00+09:00",
+        uptimeSeconds: 86420,
+        wifiRssi: -45,
+    },
+];
+
 export const handlers = [
     http.get("/api/v1/attendance/today", () => {
         const response: AttendanceTodayResponse = {
@@ -168,6 +220,23 @@ export const handlers = [
         const response: EmployeeListResponse = {
             data: filtered,
             total: filtered.length,
+        };
+        return HttpResponse.json(response);
+    }),
+
+    http.get("/api/v1/dashboard/realtime", () => {
+        // 실제 환경에선 매번 다른 데이터지만, mock에선 약간의 변화만 줘서 폴링 효과 시뮬레이션
+        const shuffled = [...mockRecentDetections].sort(() => Math.random() - 0.5);
+
+        const response: RecentDetectionsResponse = {
+            data: shuffled.slice(0, 5),
+        };
+        return HttpResponse.json(response);
+    }),
+
+    http.get("/api/v1/dashboard/device-status", () => {
+        const response: DeviceStatusResponse = {
+            data: mockDeviceStatus,
         };
         return HttpResponse.json(response);
     }),

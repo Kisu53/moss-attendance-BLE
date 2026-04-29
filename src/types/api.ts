@@ -106,13 +106,28 @@ export interface AdminUser {
     role?: string;
 }
 
+export interface RecentDetection {
+    id: number;
+    beaconLabel: string;
+    employeeName: string;
+    detectedAt: string;
+    rssi: number;
+}
+
+export interface RecentDetectionsResponse {
+    data: RecentDetection[];
+}
+
 export interface DeviceStatus {
-    device_id: string;
+    deviceId: string;
     online: boolean;
-    last_heartbeat_at: ISODateTimeString | null;
-    uptime_seconds?: number;
-    free_heap?: number;
-    wifi_rssi?: number;
+    lastHeartbeat: string;
+    uptimeSeconds: number;
+    wifiRssi: number;
+}
+
+export interface DeviceStatusResponse {
+    data: DeviceStatus[];
 }
 
 export interface DetectedBeacon {
