@@ -1,5 +1,5 @@
 import apiClient from "./client";
-import type { DeviceStatusResponse, RecentDetectionsResponse } from "../types/api";
+import type { RecentDetectionsResponse, DeviceStatusResponse } from "../types/api";
 
 export async function fetchRealtime() {
   const { data } = await apiClient.get<RecentDetectionsResponse>("/dashboard/realtime");

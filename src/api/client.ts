@@ -7,6 +7,7 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
+// 컴포넌트에서 apiClient.get("/attendance")로 요청하면 실제로 /api/v1/attendance로 요청
 
 // 요청 인터셉터 (향후 인증 토큰 추가 위치)
 apiClient.interceptors.request.use(
