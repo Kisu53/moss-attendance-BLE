@@ -12,6 +12,9 @@ import type {
   Beacon,
   BeaconListResponse,
   CreateBeaconRequest,
+  SystemConfigItem,
+  UpdateConfigRequest,
+  SystemConfigResponse,
 } from "../types/api";
 
 const getMockDate = (offsetDays = 0) => {
@@ -232,6 +235,39 @@ const mockBeacons: Beacon[] = [
 
 let nextBeaconId = 5;
 
+const mockSystemConfig: SystemConfigItem[] = [
+  {
+    key: "rssi_threshold",
+    value: "-75",
+    description: "BLE 비콘 감지 RSSI 임계값 (dBm)",
+    updatedAt: "2026-04-01T09:00:00+09:00",
+  },
+  {
+    key: "auto_checkout_minutes",
+    value: "30",
+    description: "마지막 감지 후 자동 퇴근 처리까지 시간 (분)",
+    updatedAt: "2026-04-01T09:00:00+09:00",
+  },
+  {
+    key: "scan_interval_seconds",
+    value: "5",
+    description: "ESP32 BLE 스캔 주기 (초)",
+    updatedAt: "2026-04-01T09:00:00+09:00",
+  },
+  {
+    key: "work_start_hour",
+    value: "09:00",
+    description: "근무 시작 시간 (HH:MM)",
+    updatedAt: "2026-04-01T09:00:00+09:00",
+  },
+  {
+    key: "work_end_hour",
+    value: "18:00",
+    description: "근무 종료 시간 (HH:MM)",
+    updatedAt: "2026-04-01T09:00:00+09:00",
+  },
+];
+
 export const handlers = [
   http.get("/api/v1/attendance/today", () => {
     const response: AttendanceTodayResponse = {
@@ -348,5 +384,45 @@ export const handlers = [
     beacon.isActive = false;
 
     return HttpResponse.json(beacon);
+  }),
+
+  http.get("/api/v1/config", () => {
+    const response: SystemConfigResponse = {
+      data: mockSystemConfig,
+    };
+    return HttpResponse.json(response);
+  }),
+
+  http.put("/api/v1/config/:key", async ({ params, request }) => {
+    const key = params.key as string;
+    const body = (await request.json()) as UpdateConfigRequest;
+
+    const item = mockSystemConfig.find((c) => c.key === key);
+    if (!item) {
+      return HttpResponse.json({ error: "존재하지 않는 설정입니다." }, { status: 404 });
+    }
+
+    // 검증 (간단 버전)
+    if (key === "rssi_threshold") {
+      const num = Number(body.value);
+      if (isNaN(num) || num > 0 || num < -100) {
+        return HttpResponse.json(
+          { error: "RSSI는 -100 ~ 0 사이의 음수여야 합니다." },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (key === "auto_checkout_minutes" || key === "scan_interval_seconds") {
+      const num = Number(body.value);
+      if (isNaN(num) || num <= 0) {
+        return HttpResponse.json({ error: "양수를 입력하세요." }, { status: 400 });
+      }
+    }
+
+    item.value = body.value;
+    item.updatedAt = new Date().toISOString();
+
+    return HttpResponse.json(item);
   }),
 ];

@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
 import Attendance from "./pages/Attendance";
 import Beacons from "./pages/Beacons";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/employees" element={<Employees />} />
             <Route path="/beacons" element={<Beacons />} />
-            <Route path="/settings" element={<div>Settings Page</div>} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

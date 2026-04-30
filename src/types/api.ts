@@ -107,6 +107,21 @@ export interface SystemConfig {
   updated_at: ISODateTimeString;
 }
 
+export interface SystemConfigItem {
+  key: string;
+  value: string;
+  description: string;
+  updatedAt: string;
+}
+
+export interface SystemConfigResponse {
+  data: SystemConfigItem[];
+}
+
+export interface UpdateConfigRequest {
+  value: string;
+}
+
 export interface AdminUser {
   id: ApiId;
   name: string;

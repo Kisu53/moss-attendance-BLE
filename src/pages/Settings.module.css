@@ -1,0 +1,42 @@
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  color: #666;
+  margin: 0 0 24px 0;
+  font-size: 14px;
+}
+
+.message {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.errorDetail {
+  font-size: 13px;
+  color: #999;
+  margin-top: 8px;
+}
+
+.placeholder {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  padding: 24px;
+}
+
+.preview {
+  background-color: #f5f5f7;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  overflow-x: auto;
+  font-family: monospace;
+}
