@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useFetch } from "../utils/useFetch";
-import { fetchBeacons } from "../api/beacons";
+import { fetchBeacons, deactivateBeacon } from "../api/beacons";
 import type { Beacon } from "../types/api";
 import { formatDate } from "../utils/date";
 import Modal from "../components/Modal";
 import BeaconForm from "../components/BeaconForm";
+import ConfirmDialog from "../components/ConfirmDialog";
 import styles from "./Beacons.module.css";
 
 export default function Beacons() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [beaconToDeactivate, setBeaconToDeactivate] = useState<Beacon | null>(null);
 
   const { data, status, errorMessage } = useFetch(() => fetchBeacons(), [refreshKey]);
 
@@ -17,6 +19,13 @@ export default function Beacons() {
 
   const handleRegisterSuccess = () => {
     setIsModalOpen(false);
+    setRefreshKey((k) => k + 1);
+  };
+
+  const handleDeactivateConfirm = async () => {
+    if (!beaconToDeactivate) return;
+    await deactivateBeacon(beaconToDeactivate.id);
+    setBeaconToDeactivate(null);
     setRefreshKey((k) => k + 1);
   };
 
@@ -54,7 +63,11 @@ export default function Beacons() {
             </thead>
             <tbody>
               {beacons.map((beacon) => (
-                <BeaconRow key={beacon.id} beacon={beacon} />
+                <BeaconRow
+                  key={beacon.id}
+                  beacon={beacon}
+                  onDeactivateClick={setBeaconToDeactivate}
+                />
               ))}
             </tbody>
           </table>
@@ -64,11 +77,32 @@ export default function Beacons() {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="비콘 등록">
         <BeaconForm onSuccess={handleRegisterSuccess} onCancel={() => setIsModalOpen(false)} />
       </Modal>
+
+      <ConfirmDialog
+        isOpen={beaconToDeactivate !== null}
+        title="비콘 비활성화"
+        message={
+          beaconToDeactivate
+            ? `'${beaconToDeactivate.label}' 비콘을 비활성화하시겠습니까? ${
+                beaconToDeactivate.employeeName ?? "할당된 직원"
+              }의 출퇴근이 더 이상 자동 기록되지 않습니다.`
+            : ""
+        }
+        confirmLabel="비활성화"
+        variant="danger"
+        onConfirm={handleDeactivateConfirm}
+        onClose={() => setBeaconToDeactivate(null)}
+      />
     </div>
   );
 }
 
-function BeaconRow({ beacon }: { beacon: Beacon }) {
+interface BeaconRowProps {
+  beacon: Beacon;
+  onDeactivateClick: (beacon: Beacon) => void;
+}
+
+function BeaconRow({ beacon, onDeactivateClick }: BeaconRowProps) {
   return (
     <tr>
       <td>{beacon.label}</td>
@@ -83,7 +117,11 @@ function BeaconRow({ beacon }: { beacon: Beacon }) {
         )}
       </td>
       <td>
-        <button className={styles.deleteBtn} disabled={!beacon.isActive}>
+        <button
+          className={styles.deleteBtn}
+          disabled={!beacon.isActive}
+          onClick={() => onDeactivateClick(beacon)}
+        >
           비활성화
         </button>
       </td>
