@@ -8,8 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,scss,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,scss,json}\""
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.6",
@@ -36,6 +36,7 @@
     "globals": "^17.5.0",
     "msw": "^2.13.5",
     "prettier": "^3.8.3",
+    "sass": "^1.99.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10"

@@ -6,7 +6,7 @@ import { formatDate } from "../utils/date";
 import Modal from "../components/Modal";
 import BeaconForm from "../components/BeaconForm";
 import ConfirmDialog from "../components/ConfirmDialog";
-import styles from "./Beacons.module.css";
+import styles from "./Beacons.module.scss";
 
 export default function Beacons() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -30,9 +30,12 @@ export default function Beacons() {
   };
 
   return (
-    <div>
+    <div className={styles.page}>
       <div className={styles.header}>
-        <h1 className={styles.title}>비콘 관리</h1>
+        <div>
+          <h1 className={styles.title}>비콘 관리</h1>
+          <p className={styles.subtitle}>비콘 등록 현황과 직원 할당 상태를 관리합니다.</p>
+        </div>
         <button className={styles.addButton} onClick={() => setIsModalOpen(true)}>
           + 비콘 등록
         </button>

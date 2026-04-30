@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AxiosError } from "axios";
 import { useFetch } from "../utils/useFetch";
 import { fetchConfig, updateConfig } from "../api/config";
 import { formatDate } from "../utils/date";
-import styles from "./Settings.module.css";
+import styles from "./Settings.module.scss";
 
 type ConfigInputType = "number-negative" | "number-positive" | "time";
 
@@ -69,27 +69,27 @@ export default function Settings() {
     return map;
   }, [data]);
 
-  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const serverValues = useMemo(() => {
+    const values: Record<string, string> = {};
+    data?.data.forEach((item) => {
+      values[item.key] = item.value;
+    });
+    return values;
+  }, [data]);
+
+  const [draftValues, setDraftValues] = useState<Record<string, string>>({});
+  const formValues = useMemo(
+    () => ({ ...serverValues, ...draftValues }),
+    [serverValues, draftValues]
+  );
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [fieldErrors, setFieldErrors] = useState<FieldError[]>([]);
 
-  useEffect(() => {
-    if (data) {
-      const initial: Record<string, string> = {};
-      data.data.forEach((item) => {
-        initial[item.key] = item.value;
-      });
-      setFormValues(initial);
-    }
-  }, [data]);
-
   const handleChange = (key: string, value: string) => {
-    setFormValues((prev) => ({ ...prev, [key]: value }));
-    // 에러 메시지 표시 중이었으면 해당 필드만 클리어
+    setDraftValues((prev) => ({ ...prev, [key]: value }));
     setFieldErrors((prev) => prev.filter((err) => err.key !== key));
   };
 
-  // 변경된 필드만 추출
   const dirtyKeys = useMemo(() => {
     return Object.keys(formValues).filter((key) => formValues[key] !== configMap.get(key));
   }, [formValues, configMap]);
@@ -98,11 +98,7 @@ export default function Settings() {
 
   const handleReset = () => {
     if (data) {
-      const initial: Record<string, string> = {};
-      data.data.forEach((item) => {
-        initial[item.key] = item.value;
-      });
-      setFormValues(initial);
+      setDraftValues({});
       setFieldErrors([]);
     }
   };
@@ -130,13 +126,12 @@ export default function Settings() {
 
     if (errors.length === 0) {
       setSaveStatus("success");
+      setDraftValues({});
       setRefreshKey((k) => k + 1);
-      // 잠시 후 success 표시 자동 제거
       setTimeout(() => setSaveStatus("idle"), 2000);
     } else {
       setFieldErrors(errors);
       setSaveStatus("partial-error");
-      // 성공한 것만이라도 반영
       if (errors.length < dirtyKeys.length) {
         setRefreshKey((k) => k + 1);
       }
@@ -149,9 +144,14 @@ export default function Settings() {
     .reverse()[0];
 
   return (
-    <div>
-      <h1 className={styles.title}>시스템 설정</h1>
-      <p className={styles.subtitle}>ESP32 디바이스 동작과 출퇴근 처리 규칙을 관리합니다.</p>
+    <div className={styles.page}>
+      <div className={styles.pageHeader}>
+        <div>
+          <h1 className={styles.title}>설정</h1>
+          <p className={styles.subtitle}>ESP32 디바이스 동작과 출퇴근 처리 규칙을 관리합니다.</p>
+        </div>
+        {hasChanges && <span className={styles.dirtyCount}>{dirtyKeys.length}개 변경됨</span>}
+      </div>
 
       {status === "loading" && <div className={styles.message}>로딩 중...</div>}
 
@@ -165,12 +165,10 @@ export default function Settings() {
       {status === "success" && data && (
         <div className={styles.formCard}>
           <div className={styles.formHeader}>
+            <strong>시스템 설정</strong>
             <span className={styles.lastUpdated}>
               마지막 수정: {lastUpdatedAt ? formatDate(lastUpdatedAt) : "-"}
             </span>
-            {hasChanges && (
-              <span className={styles.dirtyCount}>{dirtyKeys.length}개 항목 변경됨</span>
-            )}
           </div>
 
           <div className={styles.fieldList}>

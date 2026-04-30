@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AxiosError } from "axios";
 import Modal from "./Modal";
-import styles from "./ConfirmDialog.module.css";
+import styles from "./ConfirmDialog.module.scss";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -49,7 +49,6 @@ export default function ConfirmDialog({
     onClose();
   };
 
-  // Modal이 자리를 마련해주고 ConfirmDiagram이 그 자리를 채우는 구조
   return (
     <Modal
       isOpen={isOpen}

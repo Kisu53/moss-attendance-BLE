@@ -4,14 +4,13 @@ import { useFetch } from "../utils/useFetch";
 import { fetchEmployees } from "../api/employees";
 import { createBeacon } from "../api/beacons";
 import type { CreateBeaconRequest } from "../types/api";
-import styles from "./BeaconForm.module.css";
+import styles from "./BeaconForm.module.scss";
 
 interface BeaconFormProps {
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-// 정규식으로 형식 검증
 const MAC_PATTERN = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/i;
 
 export default function BeaconForm({ onSuccess, onCancel }: BeaconFormProps) {
@@ -28,7 +27,6 @@ export default function BeaconForm({ onSuccess, onCancel }: BeaconFormProps) {
 
   const { data: employeesData, status: employeesStatus } = useFetch(() => fetchEmployees("true"));
 
-  // 입력 검증 함수
   const validate = (): boolean => {
     const errors: typeof validationErrors = {};
 
@@ -53,7 +51,6 @@ export default function BeaconForm({ onSuccess, onCancel }: BeaconFormProps) {
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    // form의 기본 동작(페이지 새로고침)을 방지
     e.preventDefault();
     setSubmitError("");
 

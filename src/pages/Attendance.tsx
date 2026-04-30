@@ -3,7 +3,7 @@ import { useFetch } from "../utils/useFetch";
 import { fetchAttendanceList } from "../api/attendance";
 import type { AttendanceLog } from "../types/api";
 import { formatTime, getTodayString } from "../utils/date";
-import styles from "./Attendance.module.css";
+import styles from "./Attendance.module.scss";
 
 export default function Attendance() {
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
@@ -16,10 +16,12 @@ export default function Attendance() {
   const logs: AttendanceLog[] = data?.data ?? [];
 
   return (
-    <div>
-      <h1 className={styles.title}>출퇴근 기록</h1>
-
-      <div className={styles.toolbar}>
+    <div className={styles.page}>
+      <div className={styles.pageHeader}>
+        <div>
+          <h1 className={styles.title}>출퇴근 기록</h1>
+          <p className={styles.subtitle}>직원별 출근, 퇴근, 자동 처리 상태를 확인합니다.</p>
+        </div>
         <label className={styles.filterLabel}>
           날짜
           <input

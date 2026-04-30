@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFetch } from "../utils/useFetch";
 import { fetchEmployees } from "../api/employees";
 import type { Employee } from "../types/api";
-import styles from "./Employees.module.css";
+import styles from "./Employees.module.scss";
 
 type ActiveFilter = "all" | "active" | "inactive";
 
@@ -24,8 +24,14 @@ export default function Employees() {
   ];
 
   return (
-    <div>
-      <h1 className={styles.title}>직원 관리</h1>
+    <div className={styles.page}>
+      <div className={styles.pageHeader}>
+        <div>
+          <h1 className={styles.title}>직원 관리</h1>
+          <p className={styles.subtitle}>직원 정보와 근무 상태를 관리합니다.</p>
+        </div>
+        <div className={styles.count}>{status === "success" && `총 ${employees.length}명`}</div>
+      </div>
 
       <div className={styles.toolbar}>
         <div className={styles.filterGroup}>
@@ -41,7 +47,6 @@ export default function Employees() {
             </button>
           ))}
         </div>
-        <div className={styles.count}>{status === "success" && `총 ${employees.length}명`}</div>
       </div>
 
       {status === "loading" && <div className={styles.message}>로딩 중...</div>}

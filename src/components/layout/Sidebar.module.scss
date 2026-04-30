@@ -1,0 +1,16 @@
+.sidebar {
+  display: none;
+}
+
+.nav {
+  display: flex;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.active {
+  color: var(--color-primary);
+}

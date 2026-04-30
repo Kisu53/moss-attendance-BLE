@@ -1,7 +1,7 @@
 import { usePolling } from "../utils/usePolling";
 import { fetchRealtime } from "../api/dashboard";
 import { formatTime } from "../utils/date";
-import styles from "./RealTimeFeed.module.css";
+import styles from "./RealTimeFeed.module.scss";
 import type { RecentDetection } from "../types/api";
 
 const POLLING_INTERVAL_MS = 5000;
@@ -13,10 +13,14 @@ export default function RealTimeFeed() {
     <section className={styles.section}>
       <div className={styles.header}>
         <h2 className={styles.title}>실시간 감지 피드</h2>
-        <div className={styles.indicator}>
-          <span className={styles.dot} />
-          <span className={styles.indicatorText}>5초마다 자동 갱신</span>
-        </div>
+        <span className={styles.syncText}>5초 갱신</span>
+      </div>
+
+      <div className={styles.tableHeader}>
+        <span>시각</span>
+        <span>직원</span>
+        <span>RSSI</span>
+        <span>액션</span>
       </div>
 
       {status === "loading" && !data && <div className={styles.message}>로딩 중...</div>}
@@ -30,27 +34,26 @@ export default function RealTimeFeed() {
       )}
 
       {data && data.data.length > 0 && (
-        <ul className={styles.list}>
-          {data.data.map((detection) => (
-            <DetectionItem key={detection.id} detection={detection} />
+        <div className={styles.list}>
+          {data.data.map((detection, index) => (
+            <DetectionItem key={detection.id} detection={detection} index={index} />
           ))}
-        </ul>
+        </div>
       )}
     </section>
   );
 }
 
-function DetectionItem({ detection }: { detection: RecentDetection }) {
+function DetectionItem({ detection, index }: { detection: RecentDetection; index: number }) {
+  const action = index < 3 ? "재감지" : "출근";
+  const actionClass = action === "재감지" ? styles.redetect : styles.checkIn;
+
   return (
-    <li className={styles.item}>
-      <div className={styles.itemMain}>
-        <span className={styles.itemName}>{detection.employeeName}</span>
-        <span className={styles.itemBeacon}>{detection.beaconLabel}</span>
-      </div>
-      <div className={styles.itemMeta}>
-        <span className={styles.itemTime}>{formatTime(detection.detectedAt)}</span>
-        <span className={styles.itemRssi}>{detection.rssi} dBm</span>
-      </div>
-    </li>
+    <div className={styles.item}>
+      <span className={styles.time}>{formatTime(detection.detectedAt)}</span>
+      <span className={styles.name}>{detection.employeeName}</span>
+      <span className={styles.rssi}>{detection.rssi}</span>
+      <span className={`${styles.action} ${actionClass}`}>{action}</span>
+    </div>
   );
 }
