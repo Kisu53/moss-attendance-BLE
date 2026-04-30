@@ -1,19 +1,32 @@
+import { useState } from "react";
 import { useFetch } from "../utils/useFetch";
 import { fetchBeacons } from "../api/beacons";
 import type { Beacon } from "../types/api";
 import { formatDate } from "../utils/date";
+import Modal from "../components/Modal";
+import BeaconForm from "../components/BeaconForm";
 import styles from "./Beacons.module.css";
 
 export default function Beacons() {
-  const { data, status, errorMessage } = useFetch(() => fetchBeacons());
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data, status, errorMessage } = useFetch(() => fetchBeacons(), [refreshKey]);
 
   const beacons: Beacon[] = data?.data ?? [];
+
+  const handleRegisterSuccess = () => {
+    setIsModalOpen(false);
+    setRefreshKey((k) => k + 1);
+  };
 
   return (
     <div>
       <div className={styles.header}>
         <h1 className={styles.title}>비콘 관리</h1>
-        <button className={styles.addButton}>+ 비콘 등록</button>
+        <button className={styles.addButton} onClick={() => setIsModalOpen(true)}>
+          + 비콘 등록
+        </button>
       </div>
 
       {status === "loading" && <div className={styles.message}>로딩 중...</div>}
@@ -47,6 +60,10 @@ export default function Beacons() {
           </table>
         </div>
       )}
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="비콘 등록">
+        <BeaconForm onSuccess={handleRegisterSuccess} onCancel={() => setIsModalOpen(false)} />
+      </Modal>
     </div>
   );
 }
