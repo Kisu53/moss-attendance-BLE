@@ -255,15 +255,15 @@ const mockSystemConfig: SystemConfigItem[] = [
     updatedAt: "2026-04-01T09:00:00+09:00",
   },
   {
-    key: "work_start_hour",
-    value: "09:00",
-    description: "근무 시작 시간 (HH:MM)",
+    key: "check_in_deadline_time",
+    value: "11:00",
+    description: "정상 출근으로 인정되는 마감 시간 (HH:MM)",
     updatedAt: "2026-04-01T09:00:00+09:00",
   },
   {
-    key: "work_end_hour",
-    value: "18:00",
-    description: "근무 종료 시간 (HH:MM)",
+    key: "required_work_hours",
+    value: "8",
+    description: "출근 후 채워야 하는 일일 기준 근무 시간",
     updatedAt: "2026-04-01T09:00:00+09:00",
   },
 ];
@@ -413,10 +413,25 @@ export const handlers = [
       }
     }
 
-    if (key === "auto_checkout_minutes" || key === "scan_interval_seconds") {
+    if (
+      key === "auto_checkout_minutes" ||
+      key === "scan_interval_seconds" ||
+      key === "required_work_hours"
+    ) {
       const num = Number(body.value);
       if (isNaN(num) || num <= 0) {
         return HttpResponse.json({ error: "양수를 입력하세요." }, { status: 400 });
+      }
+
+      if (key === "required_work_hours" && num > 24) {
+        return HttpResponse.json({ error: "근무 시간은 24시간 이하여야 합니다." }, { status: 400 });
+      }
+    }
+
+    if (key === "check_in_deadline_time") {
+      const validTime = /^([01]\d|2[0-3]):[0-5]\d$/.test(body.value);
+      if (!validTime) {
+        return HttpResponse.json({ error: "시간 형식은 HH:MM이어야 합니다." }, { status: 400 });
       }
     }
 

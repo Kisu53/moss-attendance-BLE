@@ -96,8 +96,8 @@ export type SystemConfigKey =
   | "rssi_threshold"
   | "auto_checkout_minutes"
   | "scan_interval_seconds"
-  | "work_start_hour"
-  | "work_end_hour"
+  | "check_in_deadline_time"
+  | "required_work_hours"
   | "report_interval_seconds";
 
 export interface SystemConfig {

@@ -40,14 +40,17 @@ const CONFIG_FIELDS: ConfigFieldMeta[] = [
     min: 1,
   },
   {
-    key: "work_start_hour",
-    label: "근무 시작 시간",
+    key: "check_in_deadline_time",
+    label: "출근 인정 마감 시간",
     inputType: "time",
   },
   {
-    key: "work_end_hour",
-    label: "근무 종료 시간",
-    inputType: "time",
+    key: "required_work_hours",
+    label: "일일 기준 근무 시간",
+    inputType: "number-positive",
+    unit: "시간",
+    min: 1,
+    max: 24,
   },
 ];
 
@@ -148,7 +151,9 @@ export default function Settings() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.title}>설정</h1>
-          <p className={styles.subtitle}>ESP32 디바이스 동작과 출퇴근 처리 규칙을 관리합니다.</p>
+          <p className={styles.subtitle}>
+            ESP32 디바이스 동작과 유연 근무제 출퇴근 처리 규칙을 관리합니다.
+          </p>
         </div>
         {hasChanges && <span className={styles.dirtyCount}>{dirtyKeys.length}개 변경됨</span>}
       </div>
