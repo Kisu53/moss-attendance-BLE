@@ -5,7 +5,7 @@ import { fetchConfig, updateConfig } from "../api/config";
 import { formatDate } from "../utils/date";
 import styles from "./Settings.module.scss";
 
-type ConfigInputType = "number-negative" | "number-positive" | "time";
+type ConfigInputType = "number-negative" | "number-positive" | "time" | "slider";
 
 interface ConfigFieldMeta {
   key: string;
@@ -14,13 +14,14 @@ interface ConfigFieldMeta {
   unit?: string;
   min?: number;
   max?: number;
+  step?: number;
 }
 
 const CONFIG_FIELDS: ConfigFieldMeta[] = [
   {
     key: "rssi_threshold",
     label: "RSSI 임계값",
-    inputType: "number-negative",
+    inputType: "slider",
     unit: "dBm",
     min: -100,
     max: 0,
@@ -254,22 +255,125 @@ function ConfigField({
         {error && <span className={styles.errorBadge}>저장 실패</span>}
       </div>
       <p className={styles.description}>{description}</p>
-      <div className={styles.inputRow}>
-        <input
+
+      {meta.inputType === "slider" ? (
+        <SliderInput
           id={meta.key}
-          type={meta.inputType === "time" ? "time" : "number"}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          min={meta.min}
-          max={meta.max}
+          min={meta.min ?? 0}
+          max={meta.max ?? 100}
+          step={meta.step ?? 1}
+          unit={meta.unit}
           disabled={disabled}
-          className={`${styles.input} ${
-            error ? styles.inputError : isDirty ? styles.inputDirty : ""
+          isDirty={isDirty}
+          hasError={!!error}
+          onChange={onChange}
+        />
+      ) : (
+        <div className={styles.inputRow}>
+          <input
+            id={meta.key}
+            type={meta.inputType === "time" ? "time" : "number"}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            min={meta.min}
+            max={meta.max}
+            disabled={disabled}
+            className={`${styles.input} ${
+              error ? styles.inputError : isDirty ? styles.inputDirty : ""
+            }`}
+          />
+          {meta.unit && <span className={styles.unit}>{meta.unit}</span>}
+        </div>
+      )}
+      {error && <p className={styles.fieldError}>{error}</p>}
+    </div>
+  );
+}
+
+interface SliderInputProps {
+  id: string;
+  value: string;
+  min: number;
+  max: number;
+  step: number;
+  unit?: string;
+  disabled?: boolean;
+  isDirty: boolean;
+  hasError: boolean;
+  onChange: (value: string) => void;
+}
+
+function SliderInput({
+  id,
+  value,
+  min,
+  max,
+  step,
+  unit,
+  disabled,
+  isDirty,
+  hasError,
+  onChange,
+}: SliderInputProps) {
+  const numValue = Number(value);
+  const safeValue = isNaN(numValue) ? min : numValue;
+
+  // 슬라이더 진행률 (CSS 그라디언트용)
+  const progress = ((safeValue - min) / (max - min)) * 100;
+
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const next = e.target.value;
+    if (next === "" || next === "-") {
+      onChange(next);
+      return;
+    }
+    const num = Number(next);
+    if (!isNaN(num)) {
+      onChange(next);
+    }
+  };
+
+  return (
+    <div className={styles.sliderContainer}>
+      <input
+        id={id}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={safeValue}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        className={`${styles.slider} ${
+          hasError ? styles.sliderError : isDirty ? styles.sliderDirty : ""
+        }`}
+        style={{
+          background: `linear-gradient(to right, 
+            var(--slider-fill) 0%, 
+            var(--slider-fill) ${progress}%, 
+            var(--slider-track) ${progress}%, 
+            var(--slider-track) 100%)`,
+        }}
+      />
+      <div className={styles.sliderValueRow}>
+        <input
+          type="number"
+          value={value}
+          onChange={handleNumberChange}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+          className={`${styles.sliderNumberInput} ${
+            hasError ? styles.inputError : isDirty ? styles.inputDirty : ""
           }`}
         />
-        {meta.unit && <span className={styles.unit}>{meta.unit}</span>}
+        {unit && <span className={styles.unit}>{unit}</span>}
+        <span className={styles.sliderRange}>
+          {min} ~ {max}
+        </span>
       </div>
-      {error && <p className={styles.fieldError}>{error}</p>}
     </div>
   );
 }
