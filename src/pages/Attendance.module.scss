@@ -24,16 +24,37 @@
   font-weight: 600;
 }
 
-.filterLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.filterPanel {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.filterGrid {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.filterField {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
   color: #52647a;
   font-size: 12px;
   font-weight: 850;
 }
 
-.dateInput {
+.input,
+.select {
+  width: 100%;
   min-height: 36px;
   padding: 0 10px;
   border: 1px solid var(--color-border);
@@ -48,12 +69,70 @@
   }
 }
 
+.select {
+  cursor: pointer;
+}
+
+.filterActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.primaryButton {
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.secondaryButton {
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: #52647a;
+}
+
+.validationText {
+  margin-right: 4px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 .tableWrapper {
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
+}
+
+.resultMeta {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--color-border-soft);
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .table {
@@ -122,11 +201,30 @@
     flex-direction: column;
   }
 
+  .filterPanel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filterGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .filterActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .validationText {
+    margin-right: 0;
+    white-space: normal;
+  }
+
   .tableWrapper {
     overflow-x: auto;
   }
 
   .table {
-    min-width: 680px;
+    min-width: 760px;
   }
 }

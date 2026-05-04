@@ -239,6 +239,7 @@ export interface UpdateBeaconRequest {
 export interface AttendanceListQuery {
   date?: LocalDateString;
   employee_id?: ApiId;
+  employee_name?: string;
   from?: LocalDateString;
   to?: LocalDateString;
   department?: string;

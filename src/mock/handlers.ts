@@ -286,10 +286,29 @@ export const handlers = [
     // URL 객체로 query parameter 추출
     const url = new URL(request.url);
     const date = url.searchParams.get("date");
+    const from = url.searchParams.get("from");
+    const to = url.searchParams.get("to");
+    const employeeName = url.searchParams.get("employee_name")?.trim();
+    const department = url.searchParams.get("department")?.trim();
 
     let filtered = mockAttendanceLogs;
     if (date) {
       filtered = filtered.filter((log) => log.date === date);
+    }
+    if (from) {
+      filtered = filtered.filter((log) => log.date >= from);
+    }
+    if (to) {
+      filtered = filtered.filter((log) => log.date <= to);
+    }
+    if (employeeName) {
+      filtered = filtered.filter((log) => log.employeeName.includes(employeeName));
+    }
+    if (department) {
+      filtered = filtered.filter((log) => {
+        const employee = mockEmployees.find((item) => item.id === log.employeeId);
+        return employee?.department === department;
+      });
     }
 
     const response: AttendanceListResponse = {
