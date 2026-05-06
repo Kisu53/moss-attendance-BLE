@@ -8,9 +8,17 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   footer?: ReactNode;
+  size?: "default" | "wide";
 }
 
-export default function Modal({ isOpen, onClose, title, children, footer }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  footer,
+  size = "default",
+}: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
@@ -35,7 +43,7 @@ export default function Modal({ isOpen, onClose, title, children, footer }: Moda
   return createPortal(
     <div className={styles.overlay} onClick={onClose}>
       <div
-        className={styles.modal}
+        className={`${styles.modal} ${size === "wide" ? styles.wide : ""}`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

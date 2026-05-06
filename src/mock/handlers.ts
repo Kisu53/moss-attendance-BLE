@@ -1,9 +1,11 @@
 import { http, HttpResponse } from "msw";
 import type {
+  AssignEmployeeBeaconRequest,
   AttendanceTodayResponse,
   AttendanceListResponse,
   AttendanceLog,
   Employee,
+  EmployeeDetailResponse,
   EmployeeListResponse,
   DeviceStatus,
   DeviceStatusResponse,
@@ -12,9 +14,11 @@ import type {
   Beacon,
   BeaconListResponse,
   CreateBeaconRequest,
+  CreateEmployeeRequest,
   ManualAttendanceRequest,
   SystemConfigItem,
   UpdateAttendanceRequest,
+  UpdateEmployeeRequest,
   UpdateConfigRequest,
   SystemConfigResponse,
 } from "../types/api";
@@ -150,6 +154,8 @@ const mockEmployees: Employee[] = [
   },
 ];
 
+let nextEmployeeId = 106;
+
 const mockRecentDetections: RecentDetection[] = [
   {
     id: 1,
@@ -235,9 +241,18 @@ const mockBeacons: Beacon[] = [
     isActive: true,
     registeredAt: "2026-02-10T09:00:00+09:00",
   },
+  {
+    id: 5,
+    macAddress: "AA:BB:CC:11:22:37",
+    employeeId: null,
+    employeeName: null,
+    label: "카드-005",
+    isActive: true,
+    registeredAt: "2026-03-05T09:00:00+09:00",
+  },
 ];
 
-let nextBeaconId = 5;
+let nextBeaconId = 6;
 
 const mockSystemConfig: SystemConfigItem[] = [
   {
@@ -271,6 +286,68 @@ const mockSystemConfig: SystemConfigItem[] = [
     updatedAt: "2026-04-01T09:00:00+09:00",
   },
 ];
+
+function getMinutesFromIso(isoString: string) {
+  const date = new Date(isoString);
+  return date.getHours() * 60 + date.getMinutes();
+}
+
+function formatMinutesAsTime(totalMinutes: number) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+function getWorkMinutes(log: AttendanceLog) {
+  if (!log.checkOut) return 0;
+  const start = new Date(log.checkIn).getTime();
+  const end = new Date(log.checkOut).getTime();
+  return Math.max(0, Math.round((end - start) / 60000));
+}
+
+function getEmployeeDetail(employee: Employee): EmployeeDetailResponse {
+  const attendanceLogs = mockAttendanceLogs
+    .filter((log) => log.employeeId === employee.id)
+    .sort((a, b) => b.checkIn.localeCompare(a.checkIn));
+  const checkInMinutes = attendanceLogs.map((log) => getMinutesFromIso(log.checkIn));
+  const averageCheckIn =
+    checkInMinutes.length > 0
+      ? formatMinutesAsTime(
+          Math.round(
+            checkInMinutes.reduce((sum, minutes) => sum + minutes, 0) / checkInMinutes.length
+          )
+        )
+      : null;
+  const currentBeacon = mockBeacons.find(
+    (beacon) => beacon.isActive && beacon.employeeId === employee.id
+  );
+
+  return {
+    employee,
+    beacon: currentBeacon ?? null,
+    availableBeacons: mockBeacons.filter((beacon) => beacon.isActive && beacon.employeeId === null),
+    summary: {
+      averageCheckIn,
+      workDays: attendanceLogs.length,
+      lateCount: attendanceLogs.filter((log) => getMinutesFromIso(log.checkIn) > 11 * 60).length,
+      totalWorkMinutes: attendanceLogs.reduce((sum, log) => sum + getWorkMinutes(log), 0),
+    },
+    recentAttendance: attendanceLogs.slice(0, 5),
+  };
+}
+
+function syncEmployeeName(employee: Employee) {
+  mockBeacons.forEach((beacon) => {
+    if (beacon.employeeId === employee.id) {
+      beacon.employeeName = employee.name;
+    }
+  });
+  mockAttendanceLogs.forEach((log) => {
+    if (log.employeeId === employee.id) {
+      log.employeeName = employee.name;
+    }
+  });
+}
 
 export const handlers = [
   http.get("/api/v1/attendance/today", () => {
@@ -400,6 +477,148 @@ export const handlers = [
       total: filtered.length,
     };
     return HttpResponse.json(response);
+  }),
+
+  http.get("/api/v1/employees/:id", ({ params }) => {
+    const id = Number(params.id);
+    const employee = mockEmployees.find((item) => item.id === id);
+
+    if (!employee) {
+      return HttpResponse.json({ error: "존재하지 않는 직원입니다." }, { status: 404 });
+    }
+
+    return HttpResponse.json(getEmployeeDetail(employee));
+  }),
+
+  http.post("/api/v1/employees", async ({ request }) => {
+    const body = (await request.json()) as CreateEmployeeRequest;
+    const name = body.name?.trim();
+    const department = body.department?.trim();
+    const position = body.position?.trim();
+    const email = body.email?.trim() || null;
+
+    if (!name || !department || !position) {
+      return HttpResponse.json({ error: "이름, 부서, 직책을 모두 입력하세요." }, { status: 400 });
+    }
+
+    if (email && mockEmployees.some((employee) => employee.email === email)) {
+      return HttpResponse.json({ error: "이미 등록된 이메일입니다." }, { status: 400 });
+    }
+
+    const now = new Date().toISOString();
+    const newEmployee: Employee = {
+      id: nextEmployeeId++,
+      name,
+      email,
+      department,
+      position,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    mockEmployees.push(newEmployee);
+
+    return HttpResponse.json(newEmployee, { status: 201 });
+  }),
+
+  http.patch("/api/v1/employees/:id", async ({ params, request }) => {
+    const id = Number(params.id);
+    const body = (await request.json()) as UpdateEmployeeRequest;
+    const employee = mockEmployees.find((item) => item.id === id);
+
+    if (!employee) {
+      return HttpResponse.json({ error: "존재하지 않는 직원입니다." }, { status: 404 });
+    }
+
+    const nextEmail = body.email?.trim() || null;
+    if (nextEmail && mockEmployees.some((item) => item.id !== id && item.email === nextEmail)) {
+      return HttpResponse.json({ error: "이미 등록된 이메일입니다." }, { status: 400 });
+    }
+
+    if (body.name !== undefined) employee.name = body.name.trim();
+    if (body.department !== undefined) employee.department = body.department.trim();
+    if (body.position !== undefined) employee.position = body.position.trim();
+    if (body.email !== undefined) employee.email = nextEmail;
+    if (body.is_active !== undefined) employee.isActive = body.is_active;
+
+    employee.updatedAt = new Date().toISOString();
+    syncEmployeeName(employee);
+
+    return HttpResponse.json(employee);
+  }),
+
+  http.delete("/api/v1/employees/:id", ({ params }) => {
+    const id = Number(params.id);
+    const employee = mockEmployees.find((item) => item.id === id);
+
+    if (!employee) {
+      return HttpResponse.json({ error: "존재하지 않는 직원입니다." }, { status: 404 });
+    }
+
+    employee.isActive = false;
+    employee.updatedAt = new Date().toISOString();
+    mockBeacons.forEach((beacon) => {
+      if (beacon.employeeId === id) {
+        beacon.employeeId = null;
+        beacon.employeeName = null;
+      }
+    });
+
+    return HttpResponse.json(employee);
+  }),
+
+  http.post("/api/v1/employees/:id/beacon", async ({ params, request }) => {
+    const employeeId = Number(params.id);
+    const body = (await request.json()) as AssignEmployeeBeaconRequest;
+    const beaconId = Number(body.beacon_id);
+    const employee = mockEmployees.find((item) => item.id === employeeId);
+    const beacon = mockBeacons.find((item) => item.id === beaconId);
+
+    if (!employee || !employee.isActive) {
+      return HttpResponse.json(
+        { error: "활성 직원만 비콘을 할당할 수 있습니다." },
+        { status: 400 }
+      );
+    }
+
+    if (!beacon || !beacon.isActive) {
+      return HttpResponse.json({ error: "할당할 수 없는 비콘입니다." }, { status: 400 });
+    }
+
+    if (beacon.employeeId !== null && beacon.employeeId !== employeeId) {
+      return HttpResponse.json({ error: "이미 다른 직원에게 할당된 비콘입니다." }, { status: 400 });
+    }
+
+    mockBeacons.forEach((item) => {
+      if (item.employeeId === employeeId) {
+        item.employeeId = null;
+        item.employeeName = null;
+      }
+    });
+
+    beacon.employeeId = employee.id;
+    beacon.employeeName = employee.name;
+
+    return HttpResponse.json(getEmployeeDetail(employee));
+  }),
+
+  http.delete("/api/v1/employees/:id/beacon", ({ params }) => {
+    const employeeId = Number(params.id);
+    const employee = mockEmployees.find((item) => item.id === employeeId);
+
+    if (!employee) {
+      return HttpResponse.json({ error: "존재하지 않는 직원입니다." }, { status: 404 });
+    }
+
+    mockBeacons.forEach((beacon) => {
+      if (beacon.employeeId === employeeId) {
+        beacon.employeeId = null;
+        beacon.employeeName = null;
+      }
+    });
+
+    return HttpResponse.json(getEmployeeDetail(employee));
   }),
 
   http.get("/api/v1/dashboard/realtime", () => {

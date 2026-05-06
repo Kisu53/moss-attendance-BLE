@@ -23,6 +23,10 @@
   animation: slideUp 0.2s ease-out;
 }
 
+.wide {
+  width: min(760px, 100%);
+}
+
 .header {
   display: flex;
   align-items: center;
