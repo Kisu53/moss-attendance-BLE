@@ -10,10 +10,12 @@ import Attendance from "./pages/Attendance";
 import Beacons from "./pages/Beacons";
 import Settings from "./pages/Settings";
 
+const routerBaseName = import.meta.env.PROD ? import.meta.env.BASE_URL : undefined;
+
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={routerBaseName}>
         <Routes>
           <Route path="/login" element={<Login />} />
 
