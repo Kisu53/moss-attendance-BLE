@@ -1,8 +1,11 @@
 import apiClient from "./client";
 import type {
+  AttendanceLog,
   AttendanceTodayResponse,
   AttendanceListQuery,
   AttendanceListResponse,
+  ManualAttendanceRequest,
+  UpdateAttendanceRequest,
 } from "../types/api";
 
 export async function fetchAttendanceToday() {
@@ -21,5 +24,15 @@ export async function fetchAttendanceList(query?: AttendanceListQuery) {
   const { data } = await apiClient.get<AttendanceListResponse>("/attendance", {
     params,
   });
+  return data;
+}
+
+export async function updateAttendanceLog(id: number, payload: UpdateAttendanceRequest) {
+  const { data } = await apiClient.patch<AttendanceLog>(`/attendance/${id}`, payload);
+  return data;
+}
+
+export async function createManualAttendance(payload: ManualAttendanceRequest) {
+  const { data } = await apiClient.post<AttendanceLog>("/attendance/manual", payload);
   return data;
 }

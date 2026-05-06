@@ -12,7 +12,9 @@ import type {
   Beacon,
   BeaconListResponse,
   CreateBeaconRequest,
+  ManualAttendanceRequest,
   SystemConfigItem,
+  UpdateAttendanceRequest,
   UpdateConfigRequest,
   SystemConfigResponse,
 } from "../types/api";
@@ -92,6 +94,8 @@ const mockAttendanceLogs: AttendanceLog[] = [
     autoCheckout: true,
   },
 ];
+
+let nextAttendanceId = 6;
 
 const mockEmployees: Employee[] = [
   {
@@ -316,6 +320,68 @@ export const handlers = [
       total: filtered.length,
     };
     return HttpResponse.json(response);
+  }),
+
+  http.patch("/api/v1/attendance/:id", async ({ params, request }) => {
+    const id = Number(params.id);
+    const body = (await request.json()) as UpdateAttendanceRequest;
+    const log = mockAttendanceLogs.find((item) => item.id === id);
+
+    if (!log) {
+      return HttpResponse.json({ error: "존재하지 않는 출퇴근 기록입니다." }, { status: 404 });
+    }
+
+    if (body.check_in !== undefined) {
+      log.checkIn = body.check_in;
+      log.date = body.check_in.slice(0, 10);
+    }
+
+    if (body.check_out !== undefined) {
+      log.checkOut = body.check_out;
+    }
+
+    if (body.memo !== undefined) {
+      log.memo = body.memo?.trim() || null;
+    }
+
+    log.autoCheckout = false;
+    log.manualAdjusted = true;
+
+    return HttpResponse.json(log);
+  }),
+
+  http.post("/api/v1/attendance/manual", async ({ request }) => {
+    const body = (await request.json()) as ManualAttendanceRequest;
+    const employeeId = Number(body.employee_id);
+    const employee = mockEmployees.find((item) => item.id === employeeId);
+
+    if (!employee) {
+      return HttpResponse.json({ error: "존재하지 않는 직원입니다." }, { status: 400 });
+    }
+
+    if (!body.date || !body.check_in) {
+      return HttpResponse.json({ error: "날짜와 출근 시간을 입력하세요." }, { status: 400 });
+    }
+
+    const beacon = mockBeacons.find((item) => item.employeeId === employeeId && item.isActive);
+    const newLog: AttendanceLog = {
+      id: nextAttendanceId++,
+      employeeId,
+      employeeName: employee.name,
+      beaconId: beacon?.id ?? 0,
+      beaconLabel: beacon?.label ?? "수동 등록",
+      checkIn: body.check_in,
+      checkOut: body.check_out ?? null,
+      date: body.date,
+      rssi: 0,
+      autoCheckout: false,
+      memo: body.memo?.trim() || null,
+      manualRegistered: true,
+    };
+
+    mockAttendanceLogs.push(newLog);
+
+    return HttpResponse.json(newLog, { status: 201 });
   }),
 
   http.get("/api/v1/employees", ({ request }) => {

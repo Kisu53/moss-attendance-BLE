@@ -80,6 +80,9 @@ export interface AttendanceLog {
   date: string; // YYYY-MM-DD
   rssi: number;
   autoCheckout: boolean;
+  memo?: string | null;
+  manualAdjusted?: boolean;
+  manualRegistered?: boolean;
 }
 
 export interface AttendanceListResponse {
