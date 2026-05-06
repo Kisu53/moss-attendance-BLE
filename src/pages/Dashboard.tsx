@@ -1,7 +1,7 @@
 import { useFetch } from "../utils/useFetch";
-import StatusCard from "../components/StatusCard";
-import RealTimeFeed from "../components/RealTimeFeed";
-import DeviceStatusCard from "../components/DeviceStatusCard";
+import StatusCard from "../components/dashboard/StatusCard";
+import RealTimeFeed from "../components/dashboard/RealTimeFeed";
+import DeviceStatusCard from "../components/dashboard/DeviceStatusCard";
 import { fetchAttendanceToday } from "../api/attendance";
 import { fetchEmployees } from "../api/employees";
 import type { Employee } from "../types/api";

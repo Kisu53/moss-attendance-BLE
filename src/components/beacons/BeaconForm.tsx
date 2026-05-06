@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { AxiosError } from "axios";
-import { useFetch } from "../utils/useFetch";
-import { fetchEmployees } from "../api/employees";
-import { createBeacon } from "../api/beacons";
-import type { CreateBeaconRequest } from "../types/api";
+import { useFetch } from "../../utils/useFetch";
+import { fetchEmployees } from "../../api/employees";
+import { createBeacon } from "../../api/beacons";
+import type { CreateBeaconRequest } from "../../types/api";
 import styles from "./BeaconForm.module.scss";
 
 interface BeaconFormProps {

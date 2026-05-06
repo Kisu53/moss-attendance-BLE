@@ -3,9 +3,9 @@ import { useFetch } from "../utils/useFetch";
 import { fetchBeacons, deactivateBeacon } from "../api/beacons";
 import type { Beacon } from "../types/api";
 import { formatDate } from "../utils/date";
-import Modal from "../components/Modal";
-import BeaconForm from "../components/BeaconForm";
-import ConfirmDialog from "../components/ConfirmDialog";
+import Modal from "../components/common/Modal";
+import BeaconForm from "../components/beacons/BeaconForm";
+import ConfirmDialog from "../components/common/ConfirmDialog";
 import styles from "./Beacons.module.scss";
 
 export default function Beacons() {

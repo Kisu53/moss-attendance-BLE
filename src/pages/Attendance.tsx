@@ -14,7 +14,7 @@ import type {
   UpdateAttendanceRequest,
 } from "../types/api";
 import { formatTime, getTodayString } from "../utils/date";
-import Modal from "../components/Modal";
+import Modal from "../components/common/Modal";
 import styles from "./Attendance.module.scss";
 
 type AttendanceFilters = {

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { AxiosError } from "axios";
-import { createEmployee, updateEmployee } from "../api/employees";
-import type { CreateEmployeeRequest, Employee } from "../types/api";
+import { createEmployee, updateEmployee } from "../../api/employees";
+import type { CreateEmployeeRequest, Employee } from "../../types/api";
 import styles from "./EmployeeForm.module.scss";
 
 interface EmployeeFormProps {

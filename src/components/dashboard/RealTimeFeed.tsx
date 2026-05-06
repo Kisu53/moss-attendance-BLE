@@ -1,8 +1,8 @@
-import { usePolling } from "../utils/usePolling";
-import { fetchRealtime } from "../api/dashboard";
-import { formatTime } from "../utils/date";
+import { usePolling } from "../../utils/usePolling";
+import { fetchRealtime } from "../../api/dashboard";
+import { formatTime } from "../../utils/date";
 import styles from "./RealTimeFeed.module.scss";
-import type { RecentDetection } from "../types/api";
+import type { RecentDetection } from "../../types/api";
 
 const POLLING_INTERVAL_MS = 5000;
 

@@ -4,10 +4,10 @@ import {
   assignEmployeeBeacon,
   fetchEmployeeDetail,
   unassignEmployeeBeacon,
-} from "../api/employees";
-import { useFetch } from "../utils/useFetch";
-import { formatTime } from "../utils/date";
-import type { AttendanceLog } from "../types/api";
+} from "../../api/employees";
+import { useFetch } from "../../utils/useFetch";
+import { formatTime } from "../../utils/date";
+import type { AttendanceLog } from "../../types/api";
 import styles from "./EmployeeDetail.module.scss";
 
 interface EmployeeDetailProps {

@@ -1,7 +1,7 @@
-import { useFetch } from "../utils/useFetch";
-import { fetchDeviceStatus } from "../api/dashboard";
+import { useFetch } from "../../utils/useFetch";
+import { fetchDeviceStatus } from "../../api/dashboard";
 import styles from "./DeviceStatusCard.module.scss";
-import type { DeviceStatus } from "../types/api";
+import type { DeviceStatus } from "../../types/api";
 
 export default function DeviceStatusCard() {
   const { data, status, errorMessage } = useFetch(() => fetchDeviceStatus());

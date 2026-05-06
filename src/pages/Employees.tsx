@@ -3,10 +3,10 @@ import { useFetch } from "../utils/useFetch";
 import { activateEmployee, deactivateEmployee, fetchEmployees } from "../api/employees";
 import { fetchBeacons } from "../api/beacons";
 import type { Beacon, Employee } from "../types/api";
-import Modal from "../components/Modal";
-import ConfirmDialog from "../components/ConfirmDialog";
-import EmployeeForm from "../components/EmployeeForm";
-import EmployeeDetail from "../components/EmployeeDetail";
+import Modal from "../components/common/Modal";
+import ConfirmDialog from "../components/common/ConfirmDialog";
+import EmployeeForm from "../components/employees/EmployeeForm";
+import EmployeeDetail from "../components/employees/EmployeeDetail";
 import styles from "./Employees.module.scss";
 
 type ActiveFilter = "all" | "active" | "inactive";
