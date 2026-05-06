@@ -41,11 +41,11 @@
 }
 
 .avatarButton {
-  width: 32px;
+  width: 64px;
   height: 32px;
   display: inline-grid;
   place-items: center;
-  border-radius: 50%;
+  border-radius: 10%;
   background: var(--color-primary);
   color: #fff;
   cursor: pointer;

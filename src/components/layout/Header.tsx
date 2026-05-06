@@ -18,9 +18,9 @@ export default function Header() {
         BLE 출퇴근 시스템
       </div>
       <div className={styles.right}>
-        <span className={styles.user}>김민준 · 개발팀</span>
+        <span className={styles.user}>김기수 · 기술연구소</span>
         <button className={styles.avatarButton} onClick={handleLogout} aria-label="로그아웃">
-          김
+          Logout
         </button>
       </div>
     </header>
