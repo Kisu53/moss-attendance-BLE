@@ -51,7 +51,7 @@ router.post("/google", async (req, res, next) => {
     const { credential } = req.body as { credential?: string };
 
     if (!credential) {
-      return res.status(400).json({ error: "Google credential is required." });
+      return res.status(400).json({ error: "Google 인증 정보가 없습니다." });
     }
 
     const ticket = await googleClient.verifyIdToken({
@@ -63,7 +63,7 @@ router.post("/google", async (req, res, next) => {
     const email = payload?.email?.toLowerCase();
 
     if (!email || !payload?.email_verified) {
-      return res.status(401).json({ error: "Google email is not verified." });
+      return res.status(401).json({ error: "Google 이메일 검증에 실패했습니다." });
     }
 
     const user = await prisma.users.findUnique({
