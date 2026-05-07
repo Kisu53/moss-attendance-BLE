@@ -1,0 +1,61 @@
+.message {
+  color: #42536a;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid #fac5c9;
+  border-radius: 6px;
+  background: var(--color-danger-soft);
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cancelBtn,
+.confirmBtn {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 850;
+
+  &:disabled {
+    opacity: 0.58;
+    cursor: not-allowed;
+  }
+}
+
+.cancelBtn {
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: #52647a;
+
+  &:hover:not(:disabled) {
+    background: #f3f7fb;
+  }
+}
+
+.confirmBtn {
+  color: #fff;
+}
+
+.primary {
+  background: var(--color-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+  }
+}
+
+.danger {
+  background: var(--color-danger);
+
+  &:hover:not(:disabled) {
+    background: #bd1f2a;
+  }
+}
