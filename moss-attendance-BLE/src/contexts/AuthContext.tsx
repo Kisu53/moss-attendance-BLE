@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { getCurrentUser, type LoginUser } from "../api/auth";
 
+const AUTH_CHECK_INTERVAL_MS = 15000;
+
 interface AuthContextType {
   isAuthReady: boolean;
   isLoggedIn: boolean;
@@ -17,6 +19,11 @@ function clearStoredAuth() {
 }
 
 function getStoredUser() {
+  if (!localStorage.getItem("authToken")) {
+    clearStoredAuth();
+    return null;
+  }
+
   const storedUser = localStorage.getItem("authUser");
 
   if (!storedUser) {
@@ -33,32 +40,58 @@ function getStoredUser() {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<LoginUser | null>(() => getStoredUser());
-  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isAuthReady, setIsAuthReady] = useState(() => !localStorage.getItem("authToken"));
 
   const isLoggedIn = isAuthReady && Boolean(localStorage.getItem("authToken") && user);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    let isMounted = true;
 
-    if (!token) {
-      localStorage.removeItem("authUser");
-      setUser(null);
-      setIsAuthReady(true);
-      return;
-    }
+    async function validateSession() {
+      const token = localStorage.getItem("authToken");
 
-    getCurrentUser()
-      .then((currentUser) => {
-        localStorage.setItem("authUser", JSON.stringify(currentUser));
-        setUser(currentUser);
-      })
-      .catch(() => {
+      if (!token) {
         clearStoredAuth();
         setUser(null);
-      })
-      .finally(() => {
         setIsAuthReady(true);
-      });
+        return;
+      }
+
+      try {
+        const currentUser = await getCurrentUser();
+
+        if (!isMounted) return;
+
+        localStorage.setItem("authUser", JSON.stringify(currentUser));
+        setUser(currentUser);
+      } catch {
+        if (!isMounted) return;
+
+        clearStoredAuth();
+        setUser(null);
+      } finally {
+        if (isMounted) {
+          setIsAuthReady(true);
+        }
+      }
+    }
+
+    const checkSession = () => {
+      void validateSession();
+    };
+
+    if (localStorage.getItem("authToken")) {
+      checkSession();
+    }
+
+    const intervalId = window.setInterval(checkSession, AUTH_CHECK_INTERVAL_MS);
+    window.addEventListener("focus", checkSession);
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", checkSession);
+    };
   }, []);
 
   const login = (token: string, user: LoginUser) => {
