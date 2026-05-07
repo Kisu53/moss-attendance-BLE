@@ -52,3 +52,10 @@
     background: var(--color-primary-dark);
   }
 }
+
+.error {
+  margin-top: 16px;
+  color: var(--color-danger);
+  font-size: 13px;
+  font-weight: 700;
+}

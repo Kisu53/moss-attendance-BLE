@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 
 const apiClient = axios.create({
-  baseURL: "/api/v1",
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? "/api/v1",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -9,13 +9,13 @@ const apiClient = axios.create({
 });
 // 컴포넌트에서 apiClient.get("/attendance")로 요청하면 실제로 /api/v1/attendance로 요청
 
-// 요청 인터셉터 (향후 인증 토큰 추가 위치)
+// 요청 인터셉터
 apiClient.interceptors.request.use(
   (config) => {
-    // const token = localStorage.getItem("authToken");
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
