@@ -28,22 +28,25 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: moss-attendance-BLE/package-lock.json
 
       - name: Install dependencies
+        working-directory: moss-attendance-BLE
         run: npm ci
 
       - name: Build
+        working-directory: moss-attendance-BLE
         run: npm run build
         env:
           VITE_API_MOCKING: "true"
 
       - name: Add SPA fallback
-        run: cp dist/index.html dist/404.html
+        run: cp moss-attendance-BLE/dist/index.html moss-attendance-BLE/dist/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: moss-attendance-BLE/dist
 
   deploy:
     environment:

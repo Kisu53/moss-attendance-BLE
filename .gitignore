@@ -7,24 +7,29 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-coverage
+# Dependencies and build output
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/coverage/
+output/
 
-# Env
-.env
-.env.*
-!.env.example
+# Environment files
+**/.env
+**/.env.*
+!**/.env.example
+
+# Generated files
+**/src/generated/
 
 # Tool output
 .playwright-cli/
+**/.playwright-cli/
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+**/.vscode/*
+!**/.vscode/extensions.json
+**/.idea/
 .DS_Store
 *.suo
 *.ntvs*
